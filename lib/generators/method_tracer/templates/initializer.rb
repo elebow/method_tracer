@@ -2,7 +2,7 @@
 # will be recorded.
 MethodTracer::Config.app_path = Rails.application.paths.path.to_s
 
-# Override the default output file. Specify a filename string or an n IO object
+# Override the default output file. Specify a filename string or an IO or StringIO object
 # like `$stdout`.
 # MethodTracer::Config.output_file = 'output_file_2.log'
 

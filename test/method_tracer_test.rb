@@ -6,7 +6,7 @@ class MethodTracerTest < Minitest::Test
     refute_nil ::MethodTracer::VERSION
   end
 
-  def test_instance_method_tracing
+  def test_method_tracing
     test_base_dir = __dir__
     MethodTracer::Config.app_path = test_base_dir + '/fixtures/my-app'
     MethodTracer::Config.output_file = StringIO.new

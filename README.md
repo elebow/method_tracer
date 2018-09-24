@@ -4,6 +4,8 @@ MethodTracer is a tool for detecting lines in an application that call certain m
 
 <sup>1</sup> Designating traced methods by file lets you trace methods defined in the "namespace" of a different gem. For example, if a hypothetical gem `activerecord-extension` defines some methods on the class `ActiveRecord`, we still have the ability to trace only the methods from `activerecord-extension` without capturing the methods from `activerecord`.
 
+**Note about gem name**: due to a naming collision on rubygems.org, this gem appears there as `method_call_tracer`.
+
 ## Usage
 
 To attach tracers to methods, instantiate `MethodTracer::Tracer` objects. For Rails applications, these can be placed in the provided initializer.
@@ -35,7 +37,7 @@ MethodTracer theoretically does not interfere with the original behavior of meth
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'method_tracer'
+gem 'method_call_tracer'
 ```
 
 And then execute:
@@ -44,7 +46,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install method_tracer
+    $ gem install method_call_tracer
 
 If you are using it with Rails, run the installation generator to install an example config initializer:
 

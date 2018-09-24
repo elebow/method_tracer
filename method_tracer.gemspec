@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'method_tracer/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'method_tracer'
+  spec.name          = 'method_call_tracer'
   spec.version       = MethodTracer::VERSION
   spec.authors       = ['Eddie Lebow']
   spec.email         = ['elebow@users.noreply.github.com']

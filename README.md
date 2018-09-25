@@ -28,10 +28,6 @@ MethodTracer supports the following configuration options:
 
 `MethodTracer::Config.output_file`: A filename or `IO` or `StringIO` object where the report output should be sent. Defaults to `$stdout`.
 
-## Limitations
-
-MethodTracer theoretically does not interfere with the original behavior of methods being traced. However, certain gems are known to misbehave when the tracing logic is monkeypatched in, and MethodTracer will refuse to trace those gems. Furthermore, any methods defined after the `MethodTracer::Tracer` is instantiated will remain untraced.
-
 ## Installation
 
 Add this line to your application's Gemfile:

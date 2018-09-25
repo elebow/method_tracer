@@ -1,3 +1,5 @@
+require 'method_tracer'
+
 # Define the prefix for the application code. Only calls matching this pattern
 # will be recorded.
 MethodTracer::Config.app_path = Rails.application.paths.path.to_s

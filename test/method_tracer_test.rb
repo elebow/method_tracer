@@ -17,10 +17,10 @@ class MethodTracerTest < Minitest::Test
 
     report_lines = MethodTracer::Config.output_file.string
     expected_lines = %r{
-      \#<MyGreatGem:.+>\.great_instance_method\ called\ from:\n
-      .+/test/fixtures/my-app/app.rb:5\n
-      MyGreatGem.great_class_method\ called\ from:\n
-      .+/test/fixtures/my-app/app.rb:9\n
+      #{Regexp.quote(test_base_dir)}/fixtures/my-great-gem\ :great_instance_method\n
+      #{Regexp.quote(test_base_dir)}/fixtures/my-app/app.rb:5\n
+      #{Regexp.quote(test_base_dir)}/fixtures/my-great-gem\ :great_class_method\n
+      #{Regexp.quote(test_base_dir)}/fixtures/my-app/app.rb:9\n
     }x
     assert expected_lines.match(report_lines)
 

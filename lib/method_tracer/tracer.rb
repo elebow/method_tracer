@@ -1,37 +1,28 @@
+require 'where_is'
+
 module MethodTracer
   class Tracer
-    UNCOOPERATIVE_NAMES = [
-      # Some classes don't behave well when we try to hook them, at least with
-      # the methods currently used.
-      'CGI',    # Waits for input from stdin when opening rails console
-      'RSpec'   # RSpec doesn't run
-    ].freeze
-
     def initialize(target)
       @target_path = target
 
-      find_methods!
-
-      add_hooks_to_class_methods
-      add_hooks_to_instance_methods
+      @tracer = TracePoint.trace(:call) do |tp|
+        record_call_if_interesting(tp)
+      end
     end
 
-    def self.uncooperative_class?(class_name)
-      !class_name.nil? &&
-        UNCOOPERATIVE_NAMES.any? { |bad_name| class_name.include?(bad_name) }
+    def record_call_if_interesting(tp)
+      return unless class_is_interesting?(tp.defined_class)
+
+      locations = caller_locations.select { |loc| loc.path.start_with?(Config.app_path) }
+      return if locations.empty?
+
+      outfile.write "#{@target_path} :#{tp.method_id}\n"
+      locations.each do |loc|
+        outfile.write "#{loc.path}:#{loc.lineno}\n"
+      end
     end
 
-    def self.record_and_call_original(unbound_m, receiver, *args, &block)
-      outfile.write "#{receiver}.#{unbound_m.name} called from:\n"
-      caller_locations.select { |loc| loc.path.start_with?(Config.app_path) }
-                      .each do |loc|
-                        outfile.write "#{loc.path}:#{loc.lineno}\n"
-                      end
-
-      unbound_m.bind(receiver).call(*args, &block)
-    end
-
-    def self.outfile
+    def outfile
       @outfile ||= begin
                      output_file = Config.output_file
                      if output_file.instance_of?(IO) || output_file.instance_of?(StringIO)
@@ -44,58 +35,13 @@ module MethodTracer
                    end
     end
 
-    private
-
-    def add_hooks_to_class_methods
-      methods_of_interest(@all_class_methods).each do |m|
-        unbound_m = m.unbind
-        receiver = m.receiver
-
-        receiver.send(:define_singleton_method, unbound_m.name) do |*args, &block|
-          Tracer.record_and_call_original(unbound_m, receiver, *args, &block)
-        end
+    def class_is_interesting?(candidate_class)
+      begin
+        location = Where.is(candidate_class)
+      rescue NameError
+        return false
       end
-    end
-
-    def add_hooks_to_instance_methods
-      methods_of_interest(@all_instance_methods).each do |m|
-        unbound_m = m.unbind
-        receiver = m.receiver
-
-        receiver.class.send(:define_method, m.name) do |*args, &block|
-          Tracer.record_and_call_original(unbound_m, receiver, *args, &block)
-        end
-      end
-    end
-
-    def find_methods!
-      @all_class_methods = []
-      @all_instance_methods = []
-      ObjectSpace.each_object(Class) do |defined_class|
-        next if Tracer.uncooperative_class?(defined_class.name)
-
-        defined_class.methods(false).each do |method_sym|
-          @all_class_methods << defined_class.method(method_sym)
-        end
-
-        begin
-          instance = defined_class.new
-          defined_class.instance_methods(false).each do |method_sym|
-            @all_instance_methods << instance.method(method_sym)
-          end
-        rescue StandardError, NotImplementedError, LoadError
-          # If the class isn't instantiable, skip it
-          next
-        end
-      end
-    end
-
-    def methods_of_interest(methods)
-      methods.select do |m|
-        m.instance_of?(Method) &&
-          !m.source_location.nil? &&
-          m.source_location[0].start_with?(@target_path)
-      end
+      location[:file].start_with?(@target_path)
     end
   end
 end

@@ -2,6 +2,8 @@
 
 MethodTracer is a tool for detecting lines in an application that call certain methods, somewhat akin to the syscall monitoring functionality of strace(1). The methods to be traced are specified by file pattern, which makes it simple to trace an entire gem<sup>1</sup>. The most common use case is helping developers and testers focus their efforts when upgrading or changing gems in large applications.
 
+MethodTracer's output is not intended to be easily human-readable.
+
 <sup>1</sup> Designating traced methods by file lets you trace methods defined in the "namespace" of a different gem. For example, if a hypothetical gem `activerecord-extension` defines some methods on the class `ActiveRecord`, we still have the ability to trace only the methods from `activerecord-extension` without capturing the methods from `activerecord`.
 
 **Note about gem name**: due to a naming collision on rubygems.org, this gem appears there as `method_call_tracer`.

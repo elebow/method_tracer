@@ -21,5 +21,7 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'minitest', '~> 0'
+  spec.add_dependency 'where_is', '~> 0'
+
+  spec.add_development_dependency 'minitest', '~> 5'
 end

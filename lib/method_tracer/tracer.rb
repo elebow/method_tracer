@@ -2,9 +2,12 @@ require 'where_is'
 
 module MethodTracer
   class Tracer
-    def initialize(target)
-      @target_path = target
+    def initialize(path:, name: nil)
+      @target_path = path
+      @target_name = name
+    end
 
+    def enable
       @tracer = TracePoint.trace(:call) do |tp|
         record_call_if_interesting(tp)
       end
@@ -16,7 +19,7 @@ module MethodTracer
       locations = caller_locations.select { |loc| loc.path.start_with?(Config.app_path) }
       return if locations.empty?
 
-      outfile.write "#{@target_path} :#{tp.method_id}\n"
+      outfile.write "#{tp.defined_class} :#{tp.method_id}\n"
       locations.each do |loc|
         outfile.write "#{loc.path}:#{loc.lineno}\n"
       end
@@ -36,11 +39,27 @@ module MethodTracer
     end
 
     def method_is_interesting?(candidate_class, method_id)
+      candidate_name = if candidate_class.instance_of?(Class)
+                         candidate_class.name
+                       else
+                         candidate_class.class.name
+                       end
+
+      # short circuit if possible for speed
+      return false if !@target_name.nil? &&
+                      !candidate_name.nil? &&
+                      !candidate_name.include?(@target_name)
+
+      method_is_defined_in_target_path(candidate_class, method_id)
+    end
+
+    def method_is_defined_in_target_path(candidate_class, method_id)
       begin
         location = Where.is(candidate_class, method_id)
       rescue NameError
         return false
       end
+
       location[:file].start_with?(@target_path)
     end
   end

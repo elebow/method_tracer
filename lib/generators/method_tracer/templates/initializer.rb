@@ -8,6 +8,6 @@ MethodTracer::Config.app_path = Rails.application.paths.path.to_s
 # like `$stdout`.
 # MethodTracer::Config.output_file = 'output_file_2.log'
 
-# Create a MethodTracer::Spy object for every gem to be spied on
-# MethodTracer::Tracer.new('/var/lib/gems/2.3.0/gems/gibbon-2.2.4/lib/gibbon/')
-# MethodTracer::Tracer.new('/var/lib/gems/2.3.0/gems/other_gem-1.0.0/lib/other_gem-1.0.0/')
+# Create a MethodTracer::Tracer object for every gem to be spied on
+# MethodTracer::Tracer.new(path: '/var/lib/gems/2.3.0/gems/gibbon-2.2.4/', name: 'Gibbon').enable
+# MethodTracer::Tracer.new(path: '/var/lib/gems/2.3.0/gems/other_gem-1.0.0/').enable

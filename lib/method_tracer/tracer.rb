@@ -11,7 +11,7 @@ module MethodTracer
     end
 
     def record_call_if_interesting(tp)
-      return unless class_is_interesting?(tp.defined_class)
+      return unless method_is_interesting?(tp.defined_class, tp.method_id)
 
       locations = caller_locations.select { |loc| loc.path.start_with?(Config.app_path) }
       return if locations.empty?
@@ -35,9 +35,9 @@ module MethodTracer
                    end
     end
 
-    def class_is_interesting?(candidate_class)
+    def method_is_interesting?(candidate_class, method_id)
       begin
-        location = Where.is(candidate_class)
+        location = Where.is(candidate_class, method_id)
       rescue NameError
         return false
       end

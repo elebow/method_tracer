@@ -19,10 +19,9 @@ module MethodTracer
       locations = caller_locations.select { |loc| loc.path.start_with?(Config.app_path) }
       return if locations.empty?
 
-      outfile.write "#{tp.defined_class} :#{tp.method_id}\n"
-      locations.each do |loc|
-        outfile.write "#{loc.path}:#{loc.lineno}\n"
-      end
+      outfile.write "#{tp.defined_class} :#{tp.method_id} "
+      outfile.write locations.map { |loc| "#{loc.path}:#{loc.lineno}" }.join('; ')
+      outfile.write "\n"
     end
 
     def outfile

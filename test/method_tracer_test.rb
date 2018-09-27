@@ -16,13 +16,9 @@ class MethodTracerTest < Minitest::Test
     App.new.run_class_method
 
     report_lines = MethodTracer::Config.output_file.string
-    expected_lines = %r{
-      MyGreatGem\ :great_instance_method\n
-      #{Regexp.quote(test_base_dir)}/fixtures/my-app/app.rb:5\n
-      \#<Class:MyGreatGem>\ :great_class_method\n
-      #{Regexp.quote(test_base_dir)}/fixtures/my-app/app.rb:9\n
-    }x
-    assert expected_lines.match(report_lines)
+    assert_equal report_lines,
+                 "MyGreatGem :great_instance_method #{test_base_dir}/fixtures/my-app/app.rb:5\n" \
+                 "#<Class:MyGreatGem> :great_class_method #{test_base_dir}/fixtures/my-app/app.rb:9\n"
 
     # assert the original methods were executed
     assert_equal MyGreatGem.instance_variable_get(:@instance_method_executed), 'great!'

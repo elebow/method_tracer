@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "$#" -ge 1 ]; then
-	name_arg=--name "$*"
+	name_arg="--name $*"
 else
 	name_arg=""
 fi

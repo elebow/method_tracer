@@ -1,26 +1,33 @@
 # MethodTracer
 
-MethodTracer is a tool for detecting lines in an application that call certain methods, somewhat akin to the syscall monitoring functionality of strace(1). The methods to be traced are specified by file pattern, which makes it simple to trace an entire gem<sup>1</sup>. The most common use case is helping developers and testers focus their efforts when upgrading or changing gems in large applications.
+MethodTracer is a tool for detecting lines in an application that call certain methods, somewhat akin to the syscall monitoring functionality of strace(1).
 
-MethodTracer's output is not intended to be easily human-readable.
+The most common use case is helping developers and testers focus their efforts when upgrading or changing gems in large applications.
 
-<sup>1</sup> Designating traced methods by file lets you trace methods defined in the "namespace" of a different gem. For example, if a hypothetical gem `activerecord-extension` defines some methods on the class `ActiveRecord`, we still have the ability to trace only the methods from `activerecord-extension` without capturing the methods from `activerecord`.
+MethodTracer's output is intended to be easily machine-readable.
 
 **Note about gem name**: due to a naming collision on rubygems.org, this gem appears there as `method_call_tracer`.
 
 ## Usage
 
-To attach tracers to methods, instantiate `MethodTracer::Tracer` objects. For Rails applications, these can be placed in the provided initializer.
+To attach tracers to methods, instantiate `MethodTracer::Tracer` objects and call `#enable`. For Rails applications, this can be done in the provided initializer.
+
+The methods to be traced are specified by file pattern. You can optionally also specify a (partial) class name to speed up the matching process, which is recommended for performance. The comparison is a simple `String#include?`; no pattern matching is supported.
 
 ```ruby
-# Trace all methods defined by the system installation of gibbon:
-MethodTracer::Tracer.new('/var/lib/gems/2.3.0/gems/gibbon-2.2.4/')
+# Trace all methods defined by the system installation of gibbon that also have "Gibbon" in the class name:
+MethodTracer::Tracer.new(path: '/var/lib/gems/2.3.0/gems/gibbon-2.2.4/', name: 'Gibbon').enable
 
-# Trace all methods defined by rbenv's 2.3.3 installation of activerecord:
-MethodTracer::Tracer.new('/home/eddie/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/activerecord-5.0.7/')
+# Trace all methods defined by the system installation of gibbon, regardless of class name:
+MethodTracer::Tracer.new(path: '/var/lib/gems/2.3.0/gems/gibbon-2.2.4/').enable
+
+# Trace all methods defined by rbenv's 2.3.3 installation of activerecord, regardless of class name:
+MethodTracer::Tracer.new(path: '/home/eddie/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/activerecord-5.0.7/').enable
 ```
 
 With tracers attached, exercise as much of the application as possible. Perhaps run the comprehensive test suite that you of course have.
+
+Using file paths makes it simple to trace an entire gem because it includes methods defined in the "namespace" of a different gem. For example, if a hypothetical gem `activerecord-extension` defines some methods on the class `ActiveRecord`, we still have the ability to trace only the methods from `activerecord-extension` without capturing the methods from `activerecord`.
 
 ## Configuration
 

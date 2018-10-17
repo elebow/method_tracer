@@ -8,11 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Eddie Lebow']
   spec.email         = ['elebow@users.noreply.github.com']
 
-  spec.summary       = 'A tool that finds lines in your application that call a specified method'
-  spec.description   = 'This tool wraps every specified method with some logging statements ' \
-                       'that record the call stack, allowing you to see exactly which lines in ' \
-                       'your application make calls to methods in question. The specified ' \
-                       'methods can constitute all methods defined in a certain gem.'
+  spec.summary       = 'A tool that finds lines in your application that call a specified method(s)'
+  spec.description   = 'This tool reports which lines in your application call (directly or ' \
+                       'indirectly) a method matching a pattern you specify. Lets you find out ' \
+                       'which lines in your application are dependent on a given gem, among ' \
+                       'other things.'
   spec.homepage      = 'https://github.com/elebow/method_tracer'
   spec.license       = 'public domain'
 
